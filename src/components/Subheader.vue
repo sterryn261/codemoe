@@ -2,12 +2,12 @@
 </script>
 
 <template>
-  <div class="list">
+  <div class="subheader">
   </div>
 </template>
 
 <style scoped lang="scss">
-.list {
+.subheader {
   position: fixed;
   top: 0;
   margin-top: 3.5em;
