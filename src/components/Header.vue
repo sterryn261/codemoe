@@ -12,8 +12,12 @@
 <style scoped lang="scss">
 header {
   position: fixed;
+  top: 0;
   width: 100vw;
   height: 3.5em;
+
+  z-index: 9999;
+
   background: #000;
 
   .title {
