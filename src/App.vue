@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Header from './components/Header.vue';
 import Subheader from './components/Subheader.vue';
-import List from './components/List.vue';
+import List from './components/List/List.vue';
 import Sidebar from './components/Sidebar.vue';
 </script>
 
