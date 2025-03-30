@@ -1,5 +1,6 @@
 const fetchData = async (url: string) => {
   try {
+    await new Promise((e) => setTimeout(e, 2001));
     const data: any = await (await fetch(url)).json();
     if (data.status === "FAILED") {
       throw data.comment;
@@ -7,6 +8,7 @@ const fetchData = async (url: string) => {
     return data.result;
   } catch (error) {
     console.log(error);
+    return error;
   }
 };
 interface ProblemType {
@@ -47,11 +49,14 @@ const contestTypeChecker = (name: string): string => {
 
 export const getData = async () => {
   let data: ContestType[] = [];
-  await fetchData(``).then(
+  await fetchData(`https://codeforces.com/api/contest.list`).then(
     async (cData) => {
-      await fetchData(``).then(
+      await fetchData(`https://codeforces.com/api/problemset.problems`).then(
         (pData) => {
           for (let contest of cData) {
+            if (contest.phase !== "FINISHED") {
+              continue;
+            }
             const type = contestTypeChecker(contest.name);
             let returnData: ContestType = {
               id: contest.id,
@@ -71,17 +76,57 @@ export const getData = async () => {
                 rating: problem.rating,
               });
             }
-
             data.push(returnData);
           }
-        },
-        (error) => {
-          console.error(error);
         }
       );
+    }
+  );
+  return data;
+};
+
+interface submissionType {
+  contestId: number;
+  problemIndex: string;
+  verdict: boolean;
+}
+interface userType {
+  handle: string;
+  country: string;
+  rating: number;
+  contribution: number;
+  avatar: string;
+  submissions: submissionType[];
+}
+
+export const getUser = async (user: string) => {
+  let data: userType | null = null;
+  await fetchData(`https://codeforces.com/api/user.info?handles=${user}`).then(
+    async (uData) => {
+      await fetchData(
+        `https://codeforces.com/api/user.status?handle=${user}`
+      ).then((uSub) => {
+        data = {
+          handle: uData[0].handle,
+          country: uData[0].country,
+          rating: uData[0].rating,
+          contribution: uData[0].contribution,
+          avatar: uData[0].avatar,
+          submissions: [],
+        };
+        for (let sub of uSub) {
+          const verdict = sub.verdict === "OK" ? true : false;
+
+          data.submissions.push({
+            contestId: sub.contestId,
+            problemIndex: sub.problem.index,
+            verdict: verdict,
+          });
+        }
+      });
     },
-    (error) => {
-      console.error(error);
+    () => {
+      data = null;
     }
   );
   return data;
