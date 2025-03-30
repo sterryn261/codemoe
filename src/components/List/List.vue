@@ -32,6 +32,6 @@ import Contest from './Contest.vue';
 
 <style scoped lang="scss">
 .list {
-  width: 80vw;
+  width: 70vw;
 }
 </style>

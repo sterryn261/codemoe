@@ -21,7 +21,7 @@ import Problem from './Problem.vue';
   flex-direction: column;
   gap: 0.75em;
 
-  width: 76vw;
+  width: 70vw;
   padding: 0.75em 1em;
   border-radius: 0.5em;
   margin: 2em 2vw;
