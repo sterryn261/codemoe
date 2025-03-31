@@ -1,12 +1,26 @@
 <script setup lang="ts">
+import type { ContestType, UserType } from './types';
+import { getData } from './data';
+import { onMounted, ref } from 'vue';
+
 import Header from './components/Header.vue';
 import List from './components/List/List.vue';
+
+const cData = ref<ContestType[]>([]);
+
+onMounted(() => {
+  getData().then((data) => {
+    cData.value = data;
+    console.log(data);
+  })
+})
+
 </script>
 
 <template>
   <Header />
   <div class="content">
-    <List />
+    <List :cData="cData" />
     <div class="sidebar">
       <div class="user">
         <input type="text" placeholder="Enter here...">

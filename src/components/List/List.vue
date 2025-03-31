@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { ContestType, UserType } from '../../types';
 import Contest from './Contest.vue';
+
+const props = defineProps<{ cData: ContestType[] }>();
 </script>
 
 <template>
