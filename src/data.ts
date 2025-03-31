@@ -63,7 +63,7 @@ export const getData = async () => {
               returnData.problems.push({
                 index: problem.index,
                 name: problem.name,
-                tags: problems.tags,
+            tags: problem.tags,
                 rating: problem.rating,
               });
             }

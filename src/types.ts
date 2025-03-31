@@ -25,4 +25,4 @@ interface UserType {
   submissions: SubmissionType[];
 }
 
-export type { ContestType, UserType };
+export type { ContestType, UserType, ProblemType, SubmissionType };
