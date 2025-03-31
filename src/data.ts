@@ -1,3 +1,5 @@
+import type { ContestType, UserType } from "./types";
+
 const fetchData = async (url: string) => {
   try {
     await new Promise((e) => setTimeout(e, 2001));
@@ -11,18 +13,7 @@ const fetchData = async (url: string) => {
     return error;
   }
 };
-interface ProblemType {
-  index: string;
-  name: string;
-  tags: string[];
-  rating: number | null;
-}
-interface ContestType {
-  id: number;
-  name: string;
-  type: string;
-  problems: ProblemType[];
-}
+
 const contestTypeChecker = (name: string): string => {
   if (name.indexOf("Kotlin") !== -1) {
     return "Kotlin";
@@ -78,29 +69,13 @@ export const getData = async () => {
             }
             data.push(returnData);
           }
-        }
-      );
-    }
-  );
+    });
+  });
   return data;
 };
 
-interface submissionType {
-  contestId: number;
-  problemIndex: string;
-  verdict: boolean;
-}
-interface userType {
-  handle: string;
-  country: string;
-  rating: number;
-  contribution: number;
-  avatar: string;
-  submissions: submissionType[];
-}
-
 export const getUser = async (user: string) => {
-  let data: userType | null = null;
+  let data: UserType | null = null;
   await fetchData(`https://codeforces.com/api/user.info?handles=${user}`).then(
     async (uData) => {
       await fetchData(
