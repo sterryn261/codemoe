@@ -1,16 +1,19 @@
 <script setup lang="ts">
+import type { ContestType, SubmissionType } from '../../types';
 import Problem from './Problem.vue';
+
+defineProps<{ contest: ContestType }>();
+
 </script>
 
 <template>
   <div class="contest">
 
     <div class="title">
-      <div class="type"> Rated </div> <span> Lorem Ispum </span>
+      <span> {{ contest.name }} </span>
     </div>
     <div class="problems">
-      <Problem />
-      <Problem />
+      <Problem :problem="problem" v-for="problem in contest.problems" />
     </div>
   </div>
 </template>
@@ -35,16 +38,6 @@ import Problem from './Problem.vue';
     gap: 1em;
 
     margin-left: 1em;
-
-    .type {
-      padding: 0.1em 0.5em;
-      border-radius: 0.5em;
-
-      font-weight: bold;
-
-      background: var(--dp);
-
-    }
 
     span {
       font-weight: bold;

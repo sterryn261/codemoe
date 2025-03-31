@@ -11,7 +11,6 @@ const cData = ref<ContestType[]>([]);
 onMounted(() => {
   getData().then((data) => {
     cData.value = data;
-    console.log(data);
   })
 })
 

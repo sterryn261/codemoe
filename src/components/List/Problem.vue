@@ -1,16 +1,29 @@
 <script setup lang="ts">
+import type { ProblemType, SubmissionType } from '../../types';
+
+const props = defineProps<{ problem: ProblemType }>();
+
 </script>
 
 <template>
   <div class="problem">
     <div class="id">
-      A
+      {{ problem.index }}
     </div>
-    <span> Lorem ipsum dolor sit, amet consectetur adipisicing elit.</span>
+    <span> {{ problem.name }}</span>
 
     <div class="tags">
-      <div class="tag"> owo </div>
-      <div class="tag"> 9999 </div>
+      <div class="tag" v-for="(tag, index) in problem.tags.slice(0, 4)">
+        <div v-if="index < 3">
+          {{ tag }}
+        </div>
+        <div v-else-if="index == 3">
+          ...
+        </div>
+      </div>
+    </div>
+    <div class="rating">
+      {{ problem.rating }}
     </div>
   </div>
 </template>
