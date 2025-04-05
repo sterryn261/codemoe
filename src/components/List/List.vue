@@ -4,7 +4,7 @@ import type { ContestType, SubmissionType } from '../../types';
 import Contest from './Contest.vue';
 
 const props = defineProps<{ cData: ContestType[] }>();
-let render = ref<number>(5);
+let render = ref<number>(20);
 
 window.onscroll = (e) => {
   if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
