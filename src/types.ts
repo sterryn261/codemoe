@@ -25,4 +25,17 @@ interface UserType {
   submissions: SubmissionType[];
 }
 
-export type { ContestType, UserType, ProblemType, SubmissionType };
+interface FilterType {
+  contestType: Set<string>;
+  tags: Set<string>;
+  difficultyUpper: number;
+  difficultyLower: number;
+  sorting: boolean;
+  random: boolean;
+
+  userContestStatus: string;
+  userProblemStatus: string;
+  recommendation: boolean;
+}
+
+export type { ContestType, UserType, ProblemType, SubmissionType, FilterType };
