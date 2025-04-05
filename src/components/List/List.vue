@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { ContestType, SubmissionType } from '../../types';
+import type { ContestType, UserType } from '../../data/types';
 import Contest from './Contest.vue';
 
-const props = defineProps<{ cData: ContestType[] }>();
+const props = defineProps<{
+  cData: ContestType[], uData: UserType | null
+}>();
 let render = ref<number>(20);
 
-window.onscroll = (e) => {
+window.onscroll = () => {
   if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
     render.value += 5;
   }
@@ -20,7 +22,7 @@ let contests = computed(() => {
 
 <template>
   <div class="list">
-    <Contest :contest="contest" v-for="contest in contests" />
+    <Contest :contest="contest" v-for="contest in contests" :uData="uData" />
   </div>
 </template>
 

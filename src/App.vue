@@ -1,45 +1,64 @@
 <script setup lang="ts">
-import type { ContestType, UserType, FilterType } from './types';
-import { getData } from './data';
-import filterFunc from './filter';
+import type { ContestType, UserType, FilterType } from './data/types';
+import { getData, getUser } from './data/data';
+import filterFunc from './data/filter';
 import { computed, onMounted, ref } from 'vue';
 
 import Header from './components/Header.vue';
 import List from './components/List/List.vue';
 
+const status = ref<string>("loading");
 const cData = ref<ContestType[]>([]);
-
+const uData = ref<UserType | null>(null);
+const handle = ref<string>("");
 
 const filter = ref<FilterType>({
   contestType: new Set<string>,
   tags: new Set<string>,
-  difficultyUpper: 2000,
-  difficultyLower: 1000,
+  difficultyUpper: -1,
+  difficultyLower: -1,
   sorting: false,
-  random: true,
+  random: false,
 
   userContestStatus: "none",
   userProblemStatus: "none",
   recommendation: false,
 });
 
-
-
 onMounted(() => {
   getData().then((data) => {
     cData.value = data;
+    status.value = "done";
+  }, (error) => {
+    console.error(error);
+    status.value = "error";
   })
 })
 const contests = computed(() => filterFunc(filter.value, cData.value));
+
 </script>
 
 <template>
   <Header />
-  <div class="content">
-    <List :cData="contests" />
+  <div class="loading" v-if="status === 'loading'">
+    Loading...
+  </div>
+  <div class="content" v-if="status === 'done'">
+    <List :cData="contests" :uData="uData" />
     <div class="sidebar">
       <div class="user">
-        <input type="text" placeholder="Enter here...">
+        <form @submit.prevent="() => {
+          getUser(handle).then((data) => {
+            if (data !== null) {
+              uData = data;
+            }
+
+          }, (error) => {
+            console.error(error);
+          })
+        }">
+          <input type="text" placeholder="Enter your handle here..." :value="handle">
+        </form>
       </div>
     </div>
   </div>
@@ -76,7 +95,6 @@ const contests = computed(() => filterFunc(filter.value, cData.value));
       color: var(--dp-text);
       background: var(--ds-bg);
     }
-
 
     input:focus {
       outline: none;

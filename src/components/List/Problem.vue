@@ -1,12 +1,26 @@
 <script setup lang="ts">
-import type { ProblemType, SubmissionType } from '../../types';
+import { computed } from 'vue';
+import type { ProblemType, SubmissionType } from '../../data/types';
 
-const props = defineProps<{ problem: ProblemType }>();
+const props = defineProps<{ problem: ProblemType, statuses: SubmissionType[] }>();
 
+const status = computed(() => {
+  let verdict = "none";
+  verdict = props.statuses.findIndex((e) =>
+    e.problemIndex === props.problem.index
+  ) === -1 ? "none" : "tried";
+
+  verdict = props.statuses.findIndex((e) =>
+    e.problemIndex === props.problem.index && e.verdict === true
+  ) === -1 ? verdict : "ok";
+
+  return verdict;
+}
+)
 </script>
 
 <template>
-  <div class="problem">
+  <div class="problem" :class="(status === 'ok' ? 'ok' : (status === 'tried' ? 'tried' : 'none'))">
     <div class="id">
       {{ problem.index }}
     </div>
@@ -61,5 +75,13 @@ const props = defineProps<{ problem: ProblemType }>();
       border-radius: 0.5em;
     }
   }
+}
+
+.ok {
+  background: #f00;
+}
+
+.tried {
+  background: #00f;
 }
 </style>
