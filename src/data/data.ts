@@ -63,14 +63,16 @@ export const getData = async () => {
               returnData.problems.push({
                 index: problem.index,
                 name: problem.name,
-            tags: problem.tags,
+                tags: problem.tags,
                 rating: problem.rating,
               });
             }
             data.push(returnData);
           }
-    });
-  });
+        }
+      );
+    }
+  );
   return data;
 };
 
