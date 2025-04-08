@@ -20,8 +20,7 @@ const filter = ref<FilterType>({
   sorting: false,
   random: false,
 
-  userContestStatus: "none",
-  userProblemStatus: "none",
+  userProblemStatus: "ok",
   recommendation: false,
 });
 
@@ -34,7 +33,7 @@ onMounted(() => {
     status.value = "error";
   })
 })
-const contests = computed(() => filterFunc(filter.value, cData.value));
+const contests = computed(() => filterFunc(filter.value, cData.value, uData.value));
 
 </script>
 

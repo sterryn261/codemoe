@@ -1,17 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { ContestType, UserType, SubmissionType } from '../../data/types';
+import type { ContestType, UserType } from '../../data/types';
 import Problem from './Problem.vue';
 
 const props = defineProps<{ contest: ContestType, uData: UserType | null }>();
-const statuses = computed<SubmissionType[]>(() => {
-  if (props.uData !== null) {
-    return props.uData.submissions.filter((e) => {
-      return e.contestId === props.contest.id;
-    })
-  }
-  return [];
-})
 
 </script>
 
@@ -22,7 +13,7 @@ const statuses = computed<SubmissionType[]>(() => {
       <span> {{ contest.name }} </span>
     </div>
     <div class="problems">
-      <Problem :problem="problem" v-for="problem in contest.problems" :statuses="statuses" />
+      <Problem :contest="props.contest.id" :problem="problem" :uData="uData" v-for="problem in contest.problems" />
     </div>
   </div>
 </template>

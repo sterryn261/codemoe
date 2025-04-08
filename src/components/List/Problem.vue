@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { ProblemType, SubmissionType } from '../../data/types';
+import type { ProblemType, UserType } from '../../data/types';
 
-const props = defineProps<{ problem: ProblemType, statuses: SubmissionType[] }>();
+const props = defineProps<{ contest: number, problem: ProblemType, uData: UserType | null }>();
 
 const status = computed(() => {
-  let verdict = "none";
-  verdict = props.statuses.findIndex((e) =>
-    e.problemIndex === props.problem.index
-  ) === -1 ? "none" : "tried";
 
-  verdict = props.statuses.findIndex((e) =>
-    e.problemIndex === props.problem.index && e.verdict === true
-  ) === -1 ? verdict : "ok";
+  if (props.uData === null) {
+    return "";
+  }
 
-  return verdict;
+  let verdict = props.uData.submissions.has(`${props.contest}${props.problem.index}`) ? props.uData.submissions.get(`${props.contest}${props.problem.index}`) : null;
+
+  return verdict === true ? "ok" : verdict === false ? "tried" : "none";
 }
 )
 </script>

@@ -10,19 +10,13 @@ interface ContestType {
   type: string;
   problems: ProblemType[];
 }
-
-interface SubmissionType {
-  contestId: number;
-  problemIndex: string;
-  verdict: boolean;
-}
 interface UserType {
   handle: string;
   country: string;
   rating: number;
   contribution: number;
   avatar: string;
-  submissions: SubmissionType[];
+  submissions: Map<string, boolean>;
 }
 
 interface FilterType {
@@ -33,9 +27,8 @@ interface FilterType {
   sorting: boolean;
   random: boolean;
 
-  userContestStatus: string;
   userProblemStatus: string;
   recommendation: boolean;
 }
 
-export type { ContestType, UserType, ProblemType, SubmissionType, FilterType };
+export type { ContestType, UserType, ProblemType, FilterType };

@@ -89,7 +89,7 @@ export const getUser = async (user: string) => {
           rating: uData[0].rating,
           contribution: uData[0].contribution,
           avatar: uData[0].avatar,
-          submissions: [],
+          submissions: new Map(),
         };
         for (let sub of uSub) {
           const verdict = sub.verdict === "OK" ? true : false;

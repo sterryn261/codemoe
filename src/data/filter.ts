@@ -1,6 +1,10 @@
-import type { ContestType, FilterType } from "./types";
+import type { ContestType, FilterType, UserType } from "./types";
 
-const filterFunc = (filterData: FilterType, input: ContestType[]) => {
+const filterFunc = (
+  filterData: FilterType,
+  input: ContestType[],
+  uData: UserType | null
+): ContestType[] => {
   let data = [...input];
 
   if (filterData.contestType.size !== 0) {
@@ -40,6 +44,35 @@ const filterFunc = (filterData: FilterType, input: ContestType[]) => {
 
   if (filterData.sorting === true) {
     data = [...data].reverse();
+  }
+  if (uData !== null && filterData.userProblemStatus !== "none") {
+    if (filterData.userProblemStatus === "ok") {
+      for (let i of data) {
+        i.problems = i.problems.filter((e) => {
+          return (
+            uData.submissions.has(`${i.id}${e.index}`) &&
+            uData.submissions.get(`${i.id}${e.index}`) === true
+          );
+        });
+      }
+    }
+    if (filterData.userProblemStatus === "tried") {
+      for (let i of data) {
+        i.problems = i.problems.filter((e) => {
+          return (
+            uData.submissions.has(`${i.id}${e.index}`) &&
+            uData.submissions.get(`${i.id}${e.index}`) === false
+          );
+        });
+      }
+    }
+    if (filterData.userProblemStatus === "submitted") {
+      for (let i of data) {
+        i.problems = i.problems.filter((e) => {
+          return uData.submissions.has(`${i.id}${e.index}`);
+        });
+      }
+    }
   }
 
   data = data.filter((e) => {
