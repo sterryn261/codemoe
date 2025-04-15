@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
+import type { Ref } from 'vue';
 import type { ProblemType, UserType } from '../../data/types';
 
-const props = defineProps<{ contest: number, problem: ProblemType, uData: UserType | null }>();
+const props = defineProps<{ problem: ProblemType }>();
+const userData = inject<Ref<UserType>>('userData');
 
 const status = computed(() => {
-
-  if (props.uData === null) {
-    return "";
+  if (userData !== undefined && userData.value !== null) {
+    const getData = userData.value.submissions.get(props.problem.id);
+    return getData === true ? 0 : getData === false ? 1 : -1;
   }
-
-  let verdict = props.uData.submissions.has(`${props.contest}${props.problem.index}`) ? props.uData.submissions.get(`${props.contest}${props.problem.index}`) : null;
-
-  return verdict === true ? "ok" : verdict === false ? "tried" : "none";
+  return -1;
 }
 )
+
 </script>
 
 <template>
-  <div class="problem" :class="(status === 'ok' ? 'ok' : (status === 'tried' ? 'tried' : 'none'))">
+  <div class="problem" :class="(status === 0 ? 'ok' : (status === 1 ? 'tried' : ''))">
     <div class="id">
       {{ problem.index }}
     </div>

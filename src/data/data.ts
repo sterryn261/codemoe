@@ -41,33 +41,35 @@ const contestTypeChecker = (name: string): string => {
 export const getData = async () => {
   let data: ContestType[] = [];
   await fetchData(`https://codeforces.com/api/contest.list`).then(
-    async (cData) => {
+    async (contestData) => {
       await fetchData(`https://codeforces.com/api/problemset.problems`).then(
-        (pData) => {
-          for (let contest of cData) {
+        (problemData) => {
+          for (let contest of contestData) {
             if (contest.phase !== "FINISHED") {
               continue;
             }
-            const type = contestTypeChecker(contest.name);
-            let returnData: ContestType = {
+
+        let returnContestData: ContestType = {
               id: contest.id,
               name: contest.name,
-              type: type,
+          type: contestTypeChecker(contest.name),
               problems: [],
             };
 
-            let problems = pData.problems.filter(
-              (e: any) => e.contestId === returnData.id
+            let problems = problemData.problems.filter(
+          (e: any) => e.contestId === returnContestData.id
             );
+
             for (let problem of problems) {
-              returnData.problems.push({
+          returnContestData.problems.push({
+            id: `${contest.id}${problem.index}`,
                 index: problem.index,
                 name: problem.name,
                 tags: problem.tags,
                 rating: problem.rating,
               });
             }
-            data.push(returnData);
+        data.push(returnContestData);
           }
         }
       );
@@ -79,27 +81,28 @@ export const getData = async () => {
 export const getUser = async (user: string) => {
   let data: UserType | null = null;
   await fetchData(`https://codeforces.com/api/user.info?handles=${user}`).then(
-    async (uData) => {
+    async (userData) => {
       await fetchData(
         `https://codeforces.com/api/user.status?handle=${user}`
-      ).then((uSub) => {
+      ).then((userSubmissions) => {
         data = {
-          handle: uData[0].handle,
-          country: uData[0].country,
-          rating: uData[0].rating,
-          contribution: uData[0].contribution,
-          avatar: uData[0].avatar,
+            handle: userData[0].handle,
+            country: userData[0].country,
+            rating: userData[0].rating,
+            contribution: userData[0].contribution,
+            avatar: userData[0].avatar,
           submissions: new Map(),
         };
-        for (let sub of uSub) {
-          const verdict = sub.verdict === "OK" ? true : false;
+          for (let sub of userSubmissions) {
+            const verdict: boolean = sub.verdict === "OK" ? true : false;
+            const id: string = `${sub.contestId}${sub.problem.index}`;
 
-          data.submissions.push({
-            contestId: sub.contestId,
-            problemIndex: sub.problem.index,
-            verdict: verdict,
-          });
+            if (!data.submissions.has(id)) {
+              data.submissions.set(id, verdict);
+            } else if (data.submissions.get(id) === false && verdict === true) {
+              data.submissions.set(id, true);
         }
+          }
       });
     },
     () => {

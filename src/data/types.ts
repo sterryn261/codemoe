@@ -1,4 +1,5 @@
 interface ProblemType {
+  id: string;
   index: string;
   name: string;
   tags: string[];

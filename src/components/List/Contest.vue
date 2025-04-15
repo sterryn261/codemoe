@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { ContestType, UserType } from '../../data/types';
+import type { ContestType } from '../../data/types';
 import Problem from './Problem.vue';
 
-const props = defineProps<{ contest: ContestType, uData: UserType | null }>();
+defineProps<{ contest: ContestType }>();
 
 </script>
 
@@ -13,7 +13,7 @@ const props = defineProps<{ contest: ContestType, uData: UserType | null }>();
       <span> {{ contest.name }} </span>
     </div>
     <div class="problems">
-      <Problem :contest="props.contest.id" :problem="problem" :uData="uData" v-for="problem in contest.problems" />
+      <Problem :problem="problem" v-for="problem in contest.problems" />
     </div>
   </div>
 </template>

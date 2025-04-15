@@ -2,14 +2,15 @@
 import type { ContestType, UserType, FilterType } from './data/types';
 import { getData, getUser } from './data/data';
 import filterFunc from './data/filter';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, provide } from 'vue';
 
 import Header from './components/Header.vue';
 import List from './components/List/List.vue';
 
-const status = ref<string>("loading");
-const cData = ref<ContestType[]>([]);
-const uData = ref<UserType | null>(null);
+const status = ref<number>(1);
+const contestData = ref<ContestType[]>([]);
+const userData = ref<UserType | null>(null);
+
 const handle = ref<string>("");
 
 const filter = ref<FilterType>({
@@ -20,36 +21,39 @@ const filter = ref<FilterType>({
   sorting: false,
   random: false,
 
-  userProblemStatus: "ok",
+  userProblemStatus: "none",
   recommendation: false,
 });
 
+provide('userData', userData);
+
 onMounted(() => {
   getData().then((data) => {
-    cData.value = data;
-    status.value = "done";
+    contestData.value = data;
+    status.value = 0;
   }, (error) => {
     console.error(error);
-    status.value = "error";
+    status.value = -1;
   })
 })
-const contests = computed(() => filterFunc(filter.value, cData.value, uData.value));
+
+const contests = computed(() => filterFunc(filter.value, contestData.value, userData.value));
 
 </script>
 
 <template>
   <Header />
-  <div class="loading" v-if="status === 'loading'">
+  <div class="loading" v-if="status === 1">
     Loading...
   </div>
-  <div class="content" v-if="status === 'done'">
-    <List :cData="contests" :uData="uData" />
+  <div class="content" v-if="status === 0">
+    <List :contest="contests" />
     <div class="sidebar">
       <div class="user">
         <form @submit.prevent="() => {
           getUser(handle).then((data) => {
             if (data !== null) {
-              uData = data;
+              userData = data;
             }
 
           }, (error) => {
