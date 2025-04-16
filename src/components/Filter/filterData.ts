@@ -41,7 +41,7 @@ const tagsList: Set<string> = new Set([
   "probabilities",
   "schedules",
   "shortest paths",
-  "sorting",
+  "sortings",
   "string suffix structures",
   "strings",
   "ternary search",
