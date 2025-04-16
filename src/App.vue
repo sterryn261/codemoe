@@ -6,6 +6,7 @@ import { computed, onMounted, ref, provide } from 'vue';
 
 import Header from './components/Header.vue';
 import List from './components/List/List.vue';
+import Filter from './components/Filter/Filter.vue';
 
 const status = ref<number>(1);
 const contestData = ref<ContestType[]>([]);
@@ -24,6 +25,9 @@ const filter = ref<FilterType>({
   userProblemStatus: "none",
   recommendation: false,
 });
+const modifyFilter = (newFilter: FilterType): void => {
+  filter.value = newFilter;
+}
 
 provide('userData', userData);
 
@@ -63,6 +67,7 @@ const contests = computed(() => filterFunc(filter.value, contestData.value, user
           <input type="text" placeholder="Enter your handle here..." :value="handle">
         </form>
       </div>
+      <Filter :filter="filter" @modify-filter="modifyFilter" />
     </div>
   </div>
 </template>
