@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue';
 import type { Ref } from 'vue';
-import type { ProblemType, UserType } from '../../data/types';
+import type { ProblemType } from '../../data/types';
 
 const props = defineProps<{ problem: ProblemType }>();
-const userData = inject<Ref<UserType>>('userData');
+const submissionData = inject<Ref<Map<string, number> | undefined>>('submissionData');
+
 
 const status = computed(() => {
-  if (userData !== undefined && userData.value !== null) {
-    const getData = userData.value.submissions.get(props.problem.id);
-    return getData === true ? 0 : getData === false ? 1 : -1;
+  if (submissionData !== undefined) {
+    if (submissionData.value?.has(props.problem.id)) {
+      return submissionData.value.get(props.problem.id);
+    }
   }
   return -1;
 }

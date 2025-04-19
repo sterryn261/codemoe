@@ -1,19 +1,25 @@
 <script setup lang="ts">
-import type { ContestType } from '../../data/types';
+import type { ContestType, ProblemType } from '../../data/types';
+import { computed, inject, watch } from 'vue';
+import type { Ref } from 'vue';
 import Problem from './Problem.vue';
 
-defineProps<{ contest: ContestType }>();
+const props = defineProps<{ contest: ContestType }>();
+const problemData = inject<Ref<ProblemType[]>>('problemData')
+
+const problems = computed(() => problemData?.value.filter((e) =>
+  e.contestId === props.contest.id
+));
 
 </script>
 
 <template>
   <div class="contest">
-
     <div class="title">
       <span> {{ contest.name }} </span>
     </div>
     <div class="problems">
-      <Problem :problem="problem" v-for="problem in contest.problems" />
+      <Problem :problem="problem" v-for="problem in problems" />
     </div>
   </div>
 </template>

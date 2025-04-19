@@ -1,65 +1,74 @@
 <script setup lang="ts">
-import type { ContestType, UserType, FilterType } from './data/types';
+import type { ContestType, UserType, FilterType, ProblemType } from './data/types';
 import { getData, getUser } from './data/data';
 import filterFunc from './data/filter';
 import { computed, onMounted, ref, provide } from 'vue';
 
 import Header from './components/Header.vue';
 import List from './components/List/List.vue';
-import Filter from './components/Filter/Filter.vue';
+// import Filter from './components/Filter/Filter.vue';
 
-const status = ref<number>(1);
+const webStatus = ref<number>(1);
+
 const contestData = ref<ContestType[]>([]);
-const userData = ref<UserType | null>(null);
+const problemData = ref<ProblemType[]>([]);
+const userData = ref<UserType | undefined>(undefined);
+const submissionData = ref<Map<string, number> | undefined>(undefined);
 
 const handle = ref<string>("");
 
-const filter = ref<FilterType>({
-  contestType: new Set<string>,
-  tags: new Set<string>,
-  difficultyUpper: -1,
-  difficultyLower: -1,
-  sorting: false,
-  random: false,
+// const filter = ref<FilterType>({
+//   contestType: new Set<string>,
+//   tags: new Set<string>,
+//   difficultyUpper: -1,
+//   difficultyLower: -1,
+//   sorting: false,
+//   random: false,
 
-  userProblemStatus: "none",
-  recommendation: false,
-});
-const modifyFilter = (newFilter: FilterType): void => {
-  filter.value = newFilter;
-}
+//   userProblemStatus: "none",
+//   recommendation: false,
+// });
+// const modifyFilter = (newFilter: FilterType): void => {
+//   filter.value = newFilter;
+// }
 
+provide('problemData', problemData);
 provide('userData', userData);
+provide('submissionData', submissionData);
+
 
 onMounted(() => {
   getData().then((data) => {
-    contestData.value = data;
-    status.value = 0;
+    webStatus.value = 0;
+
+    contestData.value = data.contestData;
+    problemData.value = data.problemData;
   }, (error) => {
+    webStatus.value = -1;
+
     console.error(error);
-    status.value = -1;
   })
 })
-
-const contests = computed(() => filterFunc(filter.value, contestData.value, userData.value));
-
 </script>
 
 <template>
   <Header />
-  <div class="loading" v-if="status === 1">
+  <div class="loading" v-if="webStatus === 1">
     Loading...
   </div>
-  <div class="content" v-if="status === 0">
-    <List :contest="contests" />
+  <div class="error" v-else-if="webStatus === -1">
+    Error
+  </div>
+  <div class="content" v-else>
+    <List :contest="contestData" />
     <div class="sidebar">
       <div class="user">
         <form @submit.prevent="() => {
           getUser(handle).then((data) => {
-            if (data !== null) {
-              userData = data;
+            if (data.userData !== undefined) {
+              userData = data.userData;
+              submissionData = data.submissionsData;
             }
-
           }, (error) => {
             console.error(error);
           })
@@ -67,7 +76,7 @@ const contests = computed(() => filterFunc(filter.value, contestData.value, user
           <input type="text" placeholder="Enter your handle here..." :value="handle">
         </form>
       </div>
-      <Filter :filter="filter" @modify-filter="modifyFilter" />
+      <!-- <Filter :filter="filter" @modify-filter="modifyFilter" /> -->
     </div>
   </div>
 </template>

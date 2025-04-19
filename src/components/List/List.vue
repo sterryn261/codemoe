@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineProps, ref } from 'vue';
+import { computed, ref } from 'vue';
 import type { ContestType } from '../../data/types';
 import Contest from './Contest.vue';
 
