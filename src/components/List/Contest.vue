@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ContestType, ProblemType } from '../../data/types';
-import { computed, inject, watch } from 'vue';
+import { computed, inject } from 'vue';
 import type { Ref } from 'vue';
 import Problem from './Problem.vue';
 
