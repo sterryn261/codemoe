@@ -1,15 +1,15 @@
-interface ProblemType {
-  id: string;
-  index: string;
-  name: string;
-  tags: string[];
-  rating: number | null;
-}
 interface ContestType {
   id: number;
   name: string;
   type: string;
-  problems: ProblemType[];
+}
+interface ProblemType {
+  id: string;
+  index: string;
+  contestId: number;
+  name: string;
+  tags: string[];
+  rating?: number;
 }
 interface UserType {
   handle: string;
@@ -17,9 +17,7 @@ interface UserType {
   rating: number;
   contribution: number;
   avatar: string;
-  submissions: Map<string, boolean>;
 }
-
 interface FilterType {
   contestType: Set<string>;
   tags: Set<string>;

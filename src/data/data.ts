@@ -1,4 +1,5 @@
-import type { ContestType, UserType } from "./types";
+import { contestTypeChecker } from "./checker";
+import type { ContestType, ProblemType, UserType } from "./types";
 
 const fetchData = async (url: string) => {
   try {
@@ -14,100 +15,76 @@ const fetchData = async (url: string) => {
   }
 };
 
-const contestTypeChecker = (name: string): string => {
-  if (name.indexOf("Kotlin") !== -1) {
-    return "Kotlin";
-  }
-  if (name.indexOf("April Fools") !== -1) {
-    return "April Fools";
-  }
-  if (name.indexOf("Global") !== -1) {
-    return "Global";
-  }
-  if (name.indexOf("Educational") !== -1) {
-    return "Educational";
-  }
-  if (name.indexOf("Div. 1 + Div. 2") !== -1) {
-    return "Div. 1 + 2";
-  }
-  for (let i = 1; i < 5; i++) {
-    if (name.indexOf(`Div. ${i}`) !== -1) {
-      return `Div. ${i}`;
-    }
-  }
-  return "Other";
-};
-
 export const getData = async () => {
-  let data: ContestType[] = [];
+  let contestData: ContestType[] = [];
+  let problemData: ProblemType[] = [];
   await fetchData(`https://codeforces.com/api/contest.list`).then(
-    async (contestData) => {
-      await fetchData(`https://codeforces.com/api/problemset.problems`).then(
-        (problemData) => {
-          for (let contest of contestData) {
-            if (contest.phase !== "FINISHED") {
-              continue;
-            }
-
-        let returnContestData: ContestType = {
-              id: contest.id,
-              name: contest.name,
-          type: contestTypeChecker(contest.name),
-              problems: [],
-            };
-
-            let problems = problemData.problems.filter(
-          (e: any) => e.contestId === returnContestData.id
-            );
-
-            for (let problem of problems) {
-          returnContestData.problems.push({
-            id: `${contest.id}${problem.index}`,
-                index: problem.index,
-                name: problem.name,
-                tags: problem.tags,
-                rating: problem.rating,
-              });
-            }
-        data.push(returnContestData);
-          }
+    async (data) => {
+      for (let contest of data) {
+        if (contest.phase !== "FINISHED") {
+          continue;
         }
-      );
+        contestData.push({
+          id: contest.id,
+          name: contest.name,
+          type: contestTypeChecker(contest.name),
+        });
+      }
     }
   );
-  return data;
+
+  await fetchData(`https://codeforces.com/api/problemset.problems`).then(
+    async (data) => {
+      for (let problem of data.problems) {
+        problemData.push({
+          id: `${problem.contestId}${problem.index}`,
+          index: problem.index,
+          contestId: problem.contestId,
+          name: problem.name,
+          tags: problem.tags,
+          rating: problem.rating,
+        });
+      }
+    }
+  );
+
+  return { contestData, problemData };
 };
 
 export const getUser = async (user: string) => {
-  let data: UserType | null = null;
-  await fetchData(`https://codeforces.com/api/user.info?handles=${user}`).then(
-    async (userData) => {
-      await fetchData(
-        `https://codeforces.com/api/user.status?handle=${user}`
-      ).then((userSubmissions) => {
-        data = {
-            handle: userData[0].handle,
-            country: userData[0].country,
-            rating: userData[0].rating,
-            contribution: userData[0].contribution,
-            avatar: userData[0].avatar,
-          submissions: new Map(),
-        };
-          for (let sub of userSubmissions) {
-            const verdict: boolean = sub.verdict === "OK" ? true : false;
-            const id: string = `${sub.contestId}${sub.problem.index}`;
+  let userData: UserType | undefined = undefined;
+  let submissionsData: Map<string, number> | undefined = undefined;
 
-            if (!data.submissions.has(id)) {
-              data.submissions.set(id, verdict);
-            } else if (data.submissions.get(id) === false && verdict === true) {
-              data.submissions.set(id, true);
-        }
-          }
-      });
-    },
-    () => {
-      data = null;
+  await fetchData(`https://codeforces.com/api/user.info?handles=${user}`).then(
+    async (data) => {
+      userData = {
+        handle: data[0].handle,
+        country: data[0].country,
+        rating: data[0].rating,
+        contribution: data[0].contribution,
+        avatar: data[0].avatar,
+      };
     }
   );
-  return data;
+
+  if (userData !== undefined) {
+    await fetchData(
+      `https://codeforces.com/api/user.status?handle=${user}`
+    ).then(async (data) => {
+      submissionsData = new Map<string, number>();
+
+      for (let submissions of data) {
+        const verdict: number = submissions.verdict === "OK" ? 0 : 1;
+        const id: string = `${submissions.contestId}${submissions.problem.index}`;
+
+        if (!submissionsData.has(id)) {
+          submissionsData.set(id, verdict);
+        } else if (submissionsData.get(id) === 1 && verdict === 0) {
+          submissionsData.set(id, 0);
+        }
+      }
+    });
+  }
+
+  return { userData, submissionsData };
 };
