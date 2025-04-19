@@ -30,6 +30,9 @@ export const getData = async () => {
           type: contestTypeChecker(contest.name),
         });
       }
+    },
+    (error) => {
+      console.error(error);
     }
   );
 
@@ -45,6 +48,9 @@ export const getData = async () => {
           rating: problem.rating,
         });
       }
+    },
+    (error) => {
+      console.error(error);
     }
   );
 
@@ -64,6 +70,9 @@ export const getUser = async (user: string) => {
         contribution: data[0].contribution,
         avatar: data[0].avatar,
       };
+    },
+    (error) => {
+      console.error(error);
     }
   );
 
@@ -83,7 +92,11 @@ export const getUser = async (user: string) => {
           submissionsData.set(id, 0);
         }
       }
-    });
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   }
 
   return { userData, submissionsData };
