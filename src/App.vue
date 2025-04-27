@@ -1,38 +1,34 @@
 <script setup lang="ts">
-import type { Contest, Problem, User, Filter, ProblemStatus, ContestStatus } from './data/types';
+import type { ContestT, ProblemT, UserT, FilterT, ProblemStatus, ContestStatus } from './data/types';
 import { getData, getUser } from './data/data';
-import { onMounted, ref, provide } from 'vue';
+import { computed, onMounted, provide, ref } from 'vue';
+import { processContestStatus } from './data/process';
 
 import Header from './components/Header/Header.vue';
 import List from './components/List/List.vue';
-import { processContestStatus } from './data/process';
+import { filterContests, filterProblems } from './components/Filter/filter';
 
 const webStatus = ref<number>(1);
 
-const contestData = ref<Contest[]>([]);
-const problemData = ref<Problem[]>([]);
-const userData = ref<User | undefined>(undefined);
+const contestData = ref<ContestT[]>([]);
+const problemData = ref<ProblemT[]>([]);
+const userData = ref<UserT | undefined>(undefined);
 const contestStatus = ref<ContestStatus | undefined>(undefined);
 const problemStatus = ref<ProblemStatus | undefined>(undefined);
 
+provide("problemStatus", problemStatus);
+
 const handle = ref<string>("");
 
-// const filter = ref<FilterType>({
-//   contestType: new Set<string>,
-//   tags: new Set<string>,
-//   difficultyUpper: -1,
-//   difficultyLower: -1,
-//   sorting: false,
-//   random: false,
-
-//   userProblemStatus: "none",
-//   recommendation: false,
-// });
-
-provide('problemData', problemData);
-provide('userData', userData);
-provide('submissionData', problemStatus);
-
+const filter = ref<FilterT>({
+  contestType: new Set<string>,
+  tags: new Set<string>(),
+  difficultyUpper: -1,
+  difficultyLower: -1,
+  sorting: false,
+  contestStatus: 1,
+  problemStatus: 3,
+});
 
 onMounted(() => {
   getData().then((data) => {
@@ -57,8 +53,11 @@ const onSubmitHandle = () => {
   }, (error) => {
     console.error(error);
   })
-
 }
+
+const contests = computed(() => contestData.value.filter((e) => filterContests(e, filter.value, contestStatus.value)));
+const problems = computed(() => problemData.value.filter((e) => filterProblems(e, filter.value, problemStatus.value)));
+
 </script>
 
 <template>
@@ -70,7 +69,7 @@ const onSubmitHandle = () => {
     Error
   </div>
   <div class="content" v-else>
-    <List :contest="contestData" />
+    <List :contests="contests" :problems="problems" />
     <div class="sidebar">
       <div class="user">
         <form @submit.prevent="onSubmitHandle()">

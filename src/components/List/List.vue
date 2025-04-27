@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import type { ContestType } from '../../data/types';
+import type { ContestT, ProblemT } from '../../data/types';
 import Contest from './Contest.vue';
 
-const props = defineProps<{ contest: ContestType[] }>();
+const props = defineProps<{ contests: ContestT[], problems: ProblemT[] }>();
 
 let render = ref<number>(20);
 
@@ -13,15 +13,15 @@ window.onscroll = () => {
   }
 };
 
-let contests = computed(() => {
-  return props.contest.slice(0, render.value);
+let loadData = computed(() => {
+  return props.contests.slice(0, render.value);
 })
 
 </script>
 
 <template>
   <div class="list">
-    <Contest :contest="contest" v-for="contest in contests" />
+    <Contest :contest="contest" :problems="problems" v-for="contest in loadData" />
   </div>
 </template>
 

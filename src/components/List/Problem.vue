@@ -1,33 +1,29 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue';
 import type { Ref } from 'vue';
-import type { ProblemType } from '../../data/types';
+import type { ProblemStatus, ProblemT } from '../../data/types';
 
-const props = defineProps<{ problem: ProblemType }>();
-const submissionData = inject<Ref<Map<string, number> | undefined>>('submissionData');
+const props = defineProps<{ problem: ProblemT }>();
+const problemStatus = inject<Ref<ProblemStatus> | undefined>("problemStatus");
 
 
-const status = computed(() => {
-  if (submissionData !== undefined) {
-    if (submissionData.value?.has(props.problem.id)) {
-      return submissionData.value.get(props.problem.id);
-    }
-  }
-  return -1;
+const status = computed(() => problemStatus == undefined ? undefined : problemStatus.value?.get(props.problem.id))
+
+const statusClass = (stats: boolean | undefined): string => {
+  return stats === undefined ? '' : (stats === false ? 'tried' : 'ok');
 }
-)
 
 </script>
 
 <template>
-  <div class="problem" :class="(status === 0 ? 'ok' : (status === 1 ? 'tried' : ''))">
+  <div class="problem" :class="statusClass(status)">
     <div class="id">
       {{ problem.index }}
     </div>
     <span> {{ problem.name }}</span>
 
     <div class="tags">
-      <div class="tag" v-for="(tag, index) in problem.tags.slice(0, 4)">
+      <div class="tag" v-for="(tag, index) in [...problem.tags].slice(0, 4)">
         <div v-if="index < 3">
           {{ tag }}
         </div>

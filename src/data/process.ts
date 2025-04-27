@@ -1,4 +1,4 @@
-import type { Problem, ProblemStatus } from "./types";
+import type { ProblemT, ProblemStatus } from "./types";
 
 const contestType = [
   "Kotlin",
@@ -22,7 +22,7 @@ const contestTypeChecker = (name: string): string => {
 };
 
 const processContestStatus = (
-  problem: Problem[],
+  problem: ProblemT[],
   problemStatus: ProblemStatus
 ) => {
   let contestStatus = new Map<number, boolean>();

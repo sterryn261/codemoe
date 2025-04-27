@@ -1,5 +1,5 @@
 import { contestTypeChecker } from "./process";
-import type { Contest, Problem, ProblemStatus, User } from "./types";
+import type { ContestT, ProblemT, ProblemStatus, UserT } from "./types";
 
 const fetchData = async (url: string) => {
   try {
@@ -15,8 +15,8 @@ const fetchData = async (url: string) => {
 };
 
 export const getData = async () => {
-  let contestData: Contest[] = [];
-  let problemData: Problem[] = [];
+  let contestData: ContestT[] = [];
+  let problemData: ProblemT[] = [];
   await fetchData(`https://codeforces.com/api/contest.list`).then(
     async (data) => {
       for (let contest of data) {
@@ -43,7 +43,7 @@ export const getData = async () => {
           index: problem.index,
           contestId: problem.contestId,
           name: problem.name,
-          tags: problem.tags,
+          tags: new Set(problem.tags),
           rating: problem.rating,
         });
       }
@@ -57,7 +57,7 @@ export const getData = async () => {
 };
 
 export const getUser = async (user: string) => {
-  let userData: User | undefined = undefined;
+  let userData: UserT | undefined = undefined;
   let problemStatus: ProblemStatus | undefined = undefined;
 
   await fetchData(`https://codeforces.com/api/user.info?handles=${user}`).then(

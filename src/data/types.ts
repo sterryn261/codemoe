@@ -1,24 +1,24 @@
-interface Contest {
+interface ContestT {
   id: number;
   name: string;
   type: string;
 }
-interface Problem {
+interface ProblemT {
   id: string;
   contestId: number;
   index: string;
   name: string;
-  tags: string[];
+  tags: Set<string>;
   rating?: number;
 }
-interface User {
+interface UserT {
   handle: string;
   country: string;
   rating: number;
   contribution: number;
   avatar: string;
 }
-interface Filter {
+interface FilterT {
   contestType: Set<string>;
   tags: Set<string>;
   difficultyUpper: number;
@@ -31,4 +31,11 @@ interface Filter {
 type ContestStatus = Map<number, boolean>;
 type ProblemStatus = Map<string, boolean>;
 
-export type { Contest, User, Problem, Filter, ContestStatus, ProblemStatus };
+export type {
+  ContestT,
+  UserT,
+  ProblemT,
+  FilterT,
+  ContestStatus,
+  ProblemStatus,
+};
