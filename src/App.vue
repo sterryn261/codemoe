@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import type { ContestType, UserType, FilterType, ProblemType } from './data/types';
+import type { Contest, Problem, User, Filter, ProblemStatus, ContestStatus } from './data/types';
 import { getData, getUser } from './data/data';
-import filterFunc from './data/filter';
-import { computed, onMounted, ref, provide } from 'vue';
+import { onMounted, ref, provide } from 'vue';
 
-import Header from './components/Header.vue';
+import Header from './components/Header/Header.vue';
 import List from './components/List/List.vue';
-// import Filter from './components/Filter/Filter.vue';
+import { processContestStatus } from './data/process';
 
 const webStatus = ref<number>(1);
 
-const contestData = ref<ContestType[]>([]);
-const problemData = ref<ProblemType[]>([]);
-const userData = ref<UserType | undefined>(undefined);
-const submissionData = ref<Map<string, number> | undefined>(undefined);
+const contestData = ref<Contest[]>([]);
+const problemData = ref<Problem[]>([]);
+const userData = ref<User | undefined>(undefined);
+const contestStatus = ref<ContestStatus | undefined>(undefined);
+const problemStatus = ref<ProblemStatus | undefined>(undefined);
 
 const handle = ref<string>("");
 
@@ -28,13 +28,10 @@ const handle = ref<string>("");
 //   userProblemStatus: "none",
 //   recommendation: false,
 // });
-// const modifyFilter = (newFilter: FilterType): void => {
-//   filter.value = newFilter;
-// }
 
 provide('problemData', problemData);
 provide('userData', userData);
-provide('submissionData', submissionData);
+provide('submissionData', problemStatus);
 
 
 onMounted(() => {
@@ -49,6 +46,19 @@ onMounted(() => {
     console.error(error);
   })
 })
+
+const onSubmitHandle = () => {
+  getUser(handle.value).then((data) => {
+    if (data.userData !== undefined && data.problemStatus !== undefined) {
+      userData.value = data.userData;
+      problemStatus.value = data.problemStatus;
+      contestStatus.value = processContestStatus(problemData.value, problemStatus.value);
+    }
+  }, (error) => {
+    console.error(error);
+  })
+
+}
 </script>
 
 <template>
@@ -63,20 +73,10 @@ onMounted(() => {
     <List :contest="contestData" />
     <div class="sidebar">
       <div class="user">
-        <form @submit.prevent="() => {
-          getUser(handle).then((data) => {
-            if (data.userData !== undefined) {
-              userData = data.userData;
-              submissionData = data.submissionsData;
-            }
-          }, (error) => {
-            console.error(error);
-          })
-        }">
+        <form @submit.prevent="onSubmitHandle()">
           <input type="text" placeholder="Enter your handle here..." :value="handle">
         </form>
       </div>
-      <!-- <Filter :filter="filter" @modify-filter="modifyFilter" /> -->
     </div>
   </div>
 </template>

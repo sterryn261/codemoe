@@ -1,5 +1,5 @@
-import { contestTypeChecker } from "./checker";
-import type { ContestType, ProblemType, UserType } from "./types";
+import { contestTypeChecker } from "./process";
+import type { Contest, Problem, ProblemStatus, User } from "./types";
 
 const fetchData = async (url: string) => {
   try {
@@ -11,13 +11,12 @@ const fetchData = async (url: string) => {
     return data.result;
   } catch (error) {
     console.log(error);
-    return error;
   }
 };
 
 export const getData = async () => {
-  let contestData: ContestType[] = [];
-  let problemData: ProblemType[] = [];
+  let contestData: Contest[] = [];
+  let problemData: Problem[] = [];
   await fetchData(`https://codeforces.com/api/contest.list`).then(
     async (data) => {
       for (let contest of data) {
@@ -58,8 +57,8 @@ export const getData = async () => {
 };
 
 export const getUser = async (user: string) => {
-  let userData: UserType | undefined = undefined;
-  let submissionsData: Map<string, number> | undefined = undefined;
+  let userData: User | undefined = undefined;
+  let problemStatus: ProblemStatus | undefined = undefined;
 
   await fetchData(`https://codeforces.com/api/user.info?handles=${user}`).then(
     async (data) => {
@@ -79,19 +78,21 @@ export const getUser = async (user: string) => {
   if (userData !== undefined) {
     await fetchData(
       `https://codeforces.com/api/user.status?handle=${user}`
-    ).then(async (data) => {
-      submissionsData = new Map<string, number>();
+    ).then(
+      async (data) => {
+        problemStatus = new Map<string, boolean>();
 
-      for (let submissions of data) {
-        const verdict: number = submissions.verdict === "OK" ? 0 : 1;
-        const id: string = `${submissions.contestId}${submissions.problem.index}`;
+        for (let submissions of data) {
+          const verdict = submissions.verdict == "OK" ? true : false;
+          const id = `${submissions.contestId}${submissions.problem.index}`;
 
-        if (!submissionsData.has(id)) {
-          submissionsData.set(id, verdict);
-        } else if (submissionsData.get(id) === 1 && verdict === 0) {
-          submissionsData.set(id, 0);
+          if (verdict == true) {
+            problemStatus.set(id, true);
+          }
+          if (verdict == false && problemStatus.get(id) != true) {
+            problemStatus.set(id, false);
+          }
         }
-      }
       },
       (error) => {
         console.error(error);
@@ -99,5 +100,5 @@ export const getUser = async (user: string) => {
     );
   }
 
-  return { userData, submissionsData };
+  return { userData, problemStatus };
 };

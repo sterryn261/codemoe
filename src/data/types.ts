@@ -1,33 +1,34 @@
-interface ContestType {
+interface Contest {
   id: number;
   name: string;
   type: string;
 }
-interface ProblemType {
+interface Problem {
   id: string;
-  index: string;
   contestId: number;
+  index: string;
   name: string;
   tags: string[];
   rating?: number;
 }
-interface UserType {
+interface User {
   handle: string;
   country: string;
   rating: number;
   contribution: number;
   avatar: string;
 }
-interface FilterType {
+interface Filter {
   contestType: Set<string>;
   tags: Set<string>;
   difficultyUpper: number;
   difficultyLower: number;
   sorting: boolean;
-  random: boolean;
-
-  userProblemStatus: string;
-  recommendation: boolean;
+  contestStatus: number;
+  problemStatus: number;
 }
 
-export type { ContestType, UserType, ProblemType, FilterType };
+type ContestStatus = Map<number, boolean>;
+type ProblemStatus = Map<string, boolean>;
+
+export type { Contest, User, Problem, Filter, ContestStatus, ProblemStatus };
