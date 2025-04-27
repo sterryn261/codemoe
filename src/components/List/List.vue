@@ -5,17 +5,22 @@ import Contest from './Contest.vue';
 
 const props = defineProps<{ contests: ContestT[], problems: ProblemT[] }>();
 
-let render = ref<number>(20);
+let render = ref<number>(10);
 
 window.onscroll = () => {
   if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
     render.value += 5;
   }
 };
-
-let loadData = computed(() => {
-  return props.contests.slice(0, render.value);
+let problemsSets = computed(() => {
+  const data = new Set<number>();
+  props.problems.forEach((e) => {
+    data.add(e.contestId);
+  })
+  return data;
 })
+
+let loadData = computed(() => props.contests.filter((e) => problemsSets.value.has(e.id)).slice(0, render.value))
 
 </script>
 

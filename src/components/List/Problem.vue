@@ -6,7 +6,6 @@ import type { ProblemStatus, ProblemT } from '../../data/types';
 const props = defineProps<{ problem: ProblemT }>();
 const problemStatus = inject<Ref<ProblemStatus> | undefined>("problemStatus");
 
-
 const status = computed(() => problemStatus == undefined ? undefined : problemStatus.value?.get(props.problem.id))
 
 const statusClass = (stats: boolean | undefined): string => {

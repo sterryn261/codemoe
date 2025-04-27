@@ -1,19 +1,21 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { ContestT, ProblemT } from '../../data/types';
 import Problem from './Problem.vue';
 
-defineProps<{ contest: ContestT, problems: ProblemT[] }>();
+const props = defineProps<{ contest: ContestT, problems: ProblemT[] }>();
+
+const loadData = computed(() => props.problems.filter((e) => e.contestId == props.contest.id))
 
 </script>
 
 <template>
-  <div v-if="problems.find((e) => e.contestId == contest.id) != undefined"></div>
   <div class="contest">
     <div class="title">
       <span> {{ contest.name }} </span>
     </div>
     <div class="problems">
-      <Problem :problem="problem" v-for="problem in problems.filter((e) => e.contestId == contest.id)" />
+      <Problem :problem="problem" v-for="problem in loadData" />
     </div>
   </div>
 </template>

@@ -47,13 +47,16 @@ const processContestStatus = (
     const status = problemStatus.get(e.id);
 
     if (status == undefined || status == false) {
-      fullAcceptance == false;
+      fullAcceptance = false;
     }
     if (status != undefined) {
-      tried == true;
+      tried = true;
     }
   });
-  contestStatus.set(currentContest, fullAcceptance == true ? true : false);
+  // @ts-ignore: This comparison appears to be unintentional because the types 'true' and 'false' have no overlap.
+  if (tried == true) {
+    contestStatus.set(currentContest, fullAcceptance == true ? true : false);
+  }
 
   return contestStatus;
 };

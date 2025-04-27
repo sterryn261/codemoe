@@ -22,10 +22,10 @@ const handle = ref<string>("");
 
 const filter = ref<FilterT>({
   contestType: new Set<string>,
-  tags: new Set<string>(),
+  tags: new Set<string>,
   difficultyUpper: -1,
   difficultyLower: -1,
-  sorting: false,
+  sorting: true,
   contestStatus: 1,
   problemStatus: 3,
 });
@@ -55,8 +55,25 @@ const onSubmitHandle = () => {
   })
 }
 
-const contests = computed(() => contestData.value.filter((e) => filterContests(e, filter.value, contestStatus.value)));
-const problems = computed(() => problemData.value.filter((e) => filterProblems(e, filter.value, problemStatus.value)));
+const contests = computed(() => {
+  const returnData = contestData.value.filter((e) => filterContests(e, filter.value, contestStatus.value));
+  if (filter.value.sorting == true) {
+    return returnData.slice().reverse();
+
+  }
+  else {
+    return returnData;
+  }
+})
+const problems = computed(() => {
+  const returnData = problemData.value.filter((e) => filterProblems(e, filter.value, problemStatus.value));
+  if (filter.value.sorting == true) {
+    return returnData.slice().reverse();
+  }
+  else {
+    return returnData;
+  }
+});
 
 </script>
 
@@ -85,6 +102,12 @@ const problems = computed(() => problemData.value.filter((e) => filterProblems(e
   position: relative;
   margin-top: 5em;
 }
+
+.loading {
+  font-size: 500%;
+  color: white;
+}
+
 
 .sidebar {
   position: absolute;
